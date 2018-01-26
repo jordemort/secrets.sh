@@ -1,7 +1,19 @@
 # secrets.sh
 
   - [Installation](#installation)
+  - [Usage](#usage)
+    - [Store a secret](#store-a-secret)
+    - [Retrieve a secret](#retrieve-a-secret)
+    - [Forget a secret](#forget-a-secret)
+    - [List all secrets](#list-all-secrets)
+    - [Dump "database"](#dump-database)
   - [Environment Variables](#environment-variables)
+    - [SECRETS_PATH](#secrets_path)
+    - [SECRETS_GPG_PATH](#secrets_gpg_path)
+    - [SECRETS_GPG_KEY](#secrets_gpg_key)
+    - [SECRETS_GPG_ARGS](#secrets_gpg_args)
+    - [SECRETS_LIST_FORMAT](#secrets_list_format)
+    - [SECRETS_DATE_FORMAT](#secrets_date_format)
   - [License](#license)
 
 secrets.sh is a secrets manager written in [bash](https://www.gnu.org/software/bash/); it provides a simple key-value store that is
