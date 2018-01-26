@@ -4,7 +4,7 @@
 #/ Simple secrets manager in bash using GPG
 #/
 #/   Store a secret:    secrets.sh set my_secret_key my_secret
-#/            ...or:    secrets.sh set my_secret_key 
+#/            ...or:    secrets.sh set my_secret_key
 #/   Retrieve a secret: secrets.sh get my_secret_key
 #/   Forget a secret:   secrets.sh del my_secret_key
 #/   List all secrets:  secrets.sh list
@@ -88,12 +88,12 @@ require_args()
 
 urlencode()
 {
-	local LANG=C i c e=''
-	for ((i=0;i<${#1};i++)) ; do
+  local LANG=C i c e=''
+  for ((i=0;i<${#1};i++)) ; do
     c=${1:$i:1}
     [[ "$c" =~ [a-zA-Z0-9\.\~\_\-] ]] || printf -v c '%%%02X' "'$c"
     e+="$c"
-	done
+  done
   echo "$e"
 }
 
