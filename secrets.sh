@@ -70,10 +70,7 @@ SECRETS_DATE_FORMAT=${SECRETS_DATE_FORMAT:-"%F %I:%M%p %Z"}
 
 require_args()
 {
-  local operation=$1
-  local want=$2
-  local have=$3
-
+  local operation=$1 want=$2 have=$3
   if [ "$want" -ne "$have" ] ; then
     echo "ERROR: incorrect number of arguments for '$operation'" >&2
     exit 1
@@ -134,17 +131,17 @@ read_secrets()
       exit $gpg_status
     fi
 
-    local decrypt_key=''
-    local verify_key=''
-    local what
-
+    local decrypt_key='' verify_key='' gpg_op
     while read -u 4
     do
-      what=$(cut -d' ' -f2 <<< "$REPLY")
-      if [ "$what" = "DECRYPTION_KEY" ] ; then
+      gpg_op=$(cut -d' ' -f2 <<< "$REPLY")
+      if [ "$gpg_op" = "DECRYPTION_KEY" ] ; then
         decrypt_key=$(cut -d' ' -f4 <<< "$REPLY")
-      elif [ "$what" = "VALIDSIG" ] ; then
+      elif [ "$gpg_op" = "VALIDSIG" ] ; then
         verify_key=$(cut -d' ' -f12 <<< "$REPLY")
+      fi
+      if [ -n "$decrypt_key" ] && [ -n "$verify_key" ] ; then
+        break
       fi
     done
 
