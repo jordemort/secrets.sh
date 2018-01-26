@@ -1,6 +1,6 @@
 # secrets.sh
 
-⚠️ **WARNING:** This code is brand new. There are no tests yet. I haven't even started using it yet. ⚠️
+⚠️ **WARNING:** This code is brand new. There are no tests yet. Even I haven't started using it yet. ⚠️
 
   - [About](#about)
   - [Installation](#installation)
@@ -79,7 +79,7 @@ Note that this just removes the secret from the secrets database; it doesn't tak
 ```secrets.sh list```
 
 Outputs a sorted list of keys and the date the were last modified.
-The output of the `list` command can be customized -- (see below)[#secrets_list_format] for details.
+The output of the `list` command can be customized -- [see below](#secrets_list_format) for details.
 
 ### Dump "database"
 ```secrets.sh dump```
@@ -112,7 +112,7 @@ The ID of the key to use when encrypting/signing/decrypting/verifying the secret
 
 ### `SECRETS_LIST_FORMAT`
 
-The  [`printf`](http://wiki.bash-hackers.org/commands/builtin/printf) format used for the [`list`](#list-all-secrets) command. The first field is the key and the second field is the formatted date that the key was last modified. Defaults to `%-50q %s`.
+The  [`printf`](http://wiki.bash-hackers.org/commands/builtin/printf) format used for the [`list`](#list-all-secrets) command. The first field is the key and the second field is the formatted date that the key was last modified. Defaults to `%-$((COLUMNS - 26))s | %s`.
 
 ### `SECRETS_DATE_FORMAT`
 
