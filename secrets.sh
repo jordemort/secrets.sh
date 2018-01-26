@@ -84,17 +84,20 @@ read_secrets()
     local fifo_dir
     fifo_dir=$(mktemp -d)
 
-    mkfifo -m 0600 "$fifo_dir/status"
-    exec 3<>"$fifo_dir/status"
-    exec 4<"$fifo_dir/status"
+    local status_fifo="$fifo_dir/status.$RANDOM"
+    mkfifo -m 0600 "$status_fifo"
+    exec 3<>"$status_fifo"
+    exec 4<"$status_fifo"
 
-    mkfifo -m 0600 "$fifo_dir/logger"
-    exec 5<>"$fifo_dir/logger"
-    exec 6<"$fifo_dir/logger"
+    local logger_fifo="$fifo_dir/logger.$RANDOM"
+    mkfifo -m 0600 "$logger_fifo"
+    exec 5<>"$logger_fifo"
+    exec 6<"$logger_fifo"
 
-    mkfifo -m 0600 "$fifo_dir/output"
-    exec 7<>"$fifo_dir/output"
-    exec 8<"$fifo_dir/output"
+    local output_fifo="$fifo_dir/output.$RANDOM"
+    mkfifo -m 0600 "$output_fifo"
+    exec 7<>"$output_fifo"
+    exec 8<"$output_fifo"
 
     rm -rf "$fifo_dir"
     local gpg_status=0
@@ -143,28 +146,30 @@ write_secrets()
   local fifo_dir
   fifo_dir=$(mktemp -d)
 
-  mkfifo -m 0600 "$fifo_dir/output"
-  exec 10<>"$fifo_dir/output"
-  exec 11<"$fifo_dir/output"
+  local logger_fifo="$fifo_dir/logger.$RANDOM"
+  mkfifo -m 0600 "$logger_fifo"
+  exec 9<>"$logger_fifo"
+  exec 10<"$logger_fifo"
 
-  mkfifo -m 0600 "$fifo_dir/logger"
-  exec 12<>"$fifo_dir/logger"
-  exec 13<"$fifo_dir/logger"
+  local output_fifo="$fifo_dir/output.$RANDOM"
+  mkfifo -m 0600 "$output_fifo"
+  exec 11<>"$output_fifo"
+  exec 12<"$output_fifo"
 
   rm -rf "$fifo_dir"
   local gpg_status=0
   $SECRETS_GPG_PATH $SECRETS_GPG_ARGS --default-recipient-self -z 9 --armor \
-    --logger-fd 12 --sign --encrypt >&10 || gpg_status=$?
+    --logger-fd 9 --sign --encrypt >&11 || gpg_status=$?
 
-  exec 10>&-
-  exec 12>&-
+  exec 9>&-
+  exec 11>&-
 
   if [ "$gpg_status" != "0" ] ; then
-    cat - <&13 >&2
+    cat - <&10 >&2
     exit $gpg_status
   fi
 
-  cat - <&11 > "$SECRETS_PATH"
+  cat - <&12 > "$SECRETS_PATH"
 }
 
 list_secrets()
