@@ -62,6 +62,8 @@ if [ -n "$SECRETS_GPG_KEY" ] ; then
   SECRETS_GPG_ARGS="$SECRETS_GPG_ARGS --default-key $SECRETS_GPG_KEY"
 fi
 
+SECRETS_LIST_FORMAT=${SECRETS_LIST_FORMAT:-"%-50q %s"}
+SECRETS_DATE_FORMAT=${SECRETS_DATE_FORMAT:-"%F %I:%M%p %Z"}
 
 require_args()
 {
@@ -159,7 +161,7 @@ list_secrets()
   local this_key this_date this_value
   while read this_key this_date this_value
   do
-    echo "'$this_key' set on $(date --date="@$this_date")"
+    printf "$SECRETS_LIST_FORMAT\n" "$this_key" "$(date +"$SECRETS_DATE_FORMAT" --date="@$this_date")"
   done
 }
 
