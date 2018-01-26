@@ -1,5 +1,9 @@
 # secrets.sh
 
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+  - [License](#license)
+
 secrets.sh is a secrets manager written in [bash](https://www.gnu.org/software/bash/); it provides a simple key-value store that is
 stored in file signed and encrypted by [GnuPG](https://gnupg.org/).
 
@@ -50,7 +54,7 @@ Note that this just removes the secret from the secrets database; it doesn't tak
 ```secrets.sh list```
 
 Outputs a sorted list of keys and the date the were last modified.
-The output of the `list` command can be customized -- see below for details.
+The output of the `list` command can be customized -- (see below)[#secrets_list_format] for details.
 
 ### Dump "database"
 ```secrets.sh dump```
