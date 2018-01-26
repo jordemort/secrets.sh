@@ -10,6 +10,8 @@
 #/   Dump database:     secrets.sh dump
 #/
 # Copyright (c) 2018 Jordan Webb
+#  - urlencode by Brian K. White
+#  - urldecode by Chris Down
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -76,6 +78,23 @@ require_args()
     echo "ERROR: incorrect number of arguments for '$operation'" >&2
     exit 1
   fi
+}
+
+urlencode()
+{
+	local LANG=C i c e=''
+	for ((i=0;i<${#1};i++)) ; do
+    c=${1:$i:1}
+    [[ "$c" =~ [a-zA-Z0-9\.\~\_\-] ]] || printf -v c '%%%02X' "'$c"
+    e+="$c"
+	done
+  echo "$e"
+}
+
+urldecode()
+{
+  local url_encoded="${1//+/ }"
+  printf '%b' "${url_encoded//%/\\x}"
 }
 
 read_secrets()
@@ -177,19 +196,20 @@ list_secrets()
   local this_key this_date this_value
   while read this_key this_date this_value
   do
+    this_key=$(urldecode "$this_key")
     printf "$SECRETS_LIST_FORMAT\n" "$this_key" "$(date +"$SECRETS_DATE_FORMAT" --date="@$this_date")"
   done
 }
 
 extract_secret()
 {
-  local key=$1
-  local this_key this_date this_value
-
+  local key=$1 this_key this_date this_value
   while read this_key this_date this_value
   do
+    this_key=$(urldecode "$this_key")
+    this_value=$(urldecode "$this_value")
     if [ "$this_key" = "$key" ] ; then
-      echo "$this_value"
+      printf "%s\n" "$this_value"
       break
     fi
   done
@@ -197,14 +217,15 @@ extract_secret()
 
 filter_secret()
 {
-  local key=$1
-  local this_key this_date this_value
-
+  local key=$1 this_key this_date this_value
   while read this_key this_date this_value
   do
     if [ -z "$this_key" ] ; then
       break
-    elif [ "$this_key" != "$key" ] ; then
+    fi
+
+    local decoded_key=$(urldecode "$this_key")
+    if [ "$decoded_key" != "$key" ] ; then
       printf "%q %q %q\n" "$this_key" "$this_date" "$this_value"
     fi
   done
@@ -215,18 +236,28 @@ case $1 in
     usage
     exit 0
     ;;
-  del|set)
-    if [ "$1" = "del" ] ; then
-      require_args "$1" "$#" 2
-    elif [ "$1" = "set" ] ; then
+  del)
+    require_args "$1" "$#" 2
+    read_secrets | filter_secret "$2" | write_secrets
+    ;;
+  set)
+    if [ "$#" = "2" ] ; then
+      stty -echo ; trap "stty echo" EXIT
+      read -p "Value: " value
+      echo ; stty echo ; trap - EXIT
+
+      if [ -z "$value" ] ; then
+        echo "ERROR: cowardly refusing to set an empty value" >&2
+        exit 1
+      fi
+    elif [ "$#" = "3" ] ; then
+      value=$3
+    else
       require_args "$1" "$#" 3
     fi
-    secrets=$(read_secrets)
-    (
-      filter_secret "$2" <<< "$secrets"
-      if [ "$1" = "set" ] ; then
-        printf "%q %q %q\n" "$2" "$(date '+%s')" "$3"
-      fi
+    read_secrets | (
+      filter_secret "$2"
+      printf "%q %q %q\n" "$(urlencode "$2")" "$(date '+%s')" "$(urlencode "$value")"
     ) | write_secrets
     ;;
   get)
