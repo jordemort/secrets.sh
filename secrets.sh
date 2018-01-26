@@ -53,8 +53,8 @@ fi
 SECRETS_GPG_ARGS=${SECRETS_GPG_ARGS:-""}
 
 #/ To use a specific GPG key, set SECRETS_GPG_KEY to the key ID.
-if [ -n "$SECRETS_KEY" ] ; then
-  SECRETS_GPG_ARGS="$SECRETS_GPG_ARGS --default-key $SECRETS_KEY"
+if [ -n "$SECRETS_GPG_KEY" ] ; then
+  SECRETS_GPG_ARGS="$SECRETS_GPG_ARGS --default-key $SECRETS_GPG_KEY"
 fi
 
 usage()
