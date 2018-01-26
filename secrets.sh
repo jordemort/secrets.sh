@@ -164,4 +164,4 @@ esac
 
 #/
 #/ If you run into any problems or have a contribution you'd like to make,
-#/ open issues or a pull request at https://github.com/jordemort/secrets.sh
+#/ open issues or pull requests at https://github.com/jordemort/secrets.sh
