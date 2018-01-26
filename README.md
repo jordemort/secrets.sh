@@ -15,6 +15,7 @@
     - [SECRETS_GPG_ARGS](#secrets_gpg_args)
     - [SECRETS_LIST_FORMAT](#secrets_list_format)
     - [SECRETS_DATE_FORMAT](#secrets_date_format)
+  - [Inspirations and Alternatives](#inspirations-and-alternatives)
   - [License](#license)
 
 ## About
@@ -107,6 +108,20 @@ The  [`printf`](http://wiki.bash-hackers.org/commands/builtin/printf) format use
 ### `SECRETS_DATE_FORMAT`
 
 The [`date`](http://man7.org/linux/man-pages/man1/date.1.html) format used for formatting the date displayed by the [`list`](#list-all-secrets) command. Defaults to `%F %I:%M%p %Z`.
+
+## Inspirations and Alternatives
+
+As stated above, secrets.sh is mainly intended for securely storing values that you want your dotfiles to inject into your environment. If you're looking for something more like a full-featured password manager for your shell, check out the following alternatives:
+
+  - [pass](https://www.passwordstore.org/)
+  - [passbox](https://github.com/RobBollons/passbox)
+  - [pony](https://github.com/jessfraz/pony)
+  - [pwd.sh](https://github.com/drduh/pwd.sh)
+
+If you're specifically interested in storing secrets in Git repositories, you might want to give these a try:
+
+  - [git-crypt](https://www.agwa.name/projects/git-crypt/)
+  - [git-secret](http://git-secret.io/)
 
 ## License
 
