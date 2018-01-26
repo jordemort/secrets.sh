@@ -77,13 +77,80 @@ require_args()
 read_secrets()
 {
   if [ -e "$SECRETS_PATH" ] ; then
-    $SECRETS_GPG_PATH -q $SECRETS_GPG_ARGS --decrypt < "$SECRETS_PATH"
+    local fifo_dir
+    fifo_dir=$(mktemp -d)
+
+    mkfifo -m 0600 "$fifo_dir/status"
+    exec 3<>"$fifo_dir/status"
+    exec 4<"$fifo_dir/status"
+
+    mkfifo -m 0600 "$fifo_dir/logger"
+    exec 5<>"$fifo_dir/logger"
+    exec 6<"$fifo_dir/logger"
+
+    mkfifo -m 0600 "$fifo_dir/output"
+    exec 7<>"$fifo_dir/output"
+    exec 8<"$fifo_dir/output"
+
+    rm -rf "$fifo_dir"
+    local gpg_status=0
+
+    $SECRETS_GPG_PATH -q $SECRETS_GPG_ARGS --with-colons \
+      --status-fd 3 --logger-fd 5 \
+      --decrypt < "$SECRETS_PATH" >&7 || gpg_status=$?
+
+    exec 3>&-
+    exec 5>&-
+    exec 7>&-
+
+    if [ "$gpg_status" != "0" ] ; then
+      cat - <&6 >&2
+      exit $gpg_status
+    fi
+
+    local decrypt_key=''
+    local verify_key=''
+    local what
+
+    while read -u 4
+    do
+      what=$(cut -d' ' -f2 <<< "$REPLY")
+      if [ "$what" = "DECRYPTION_KEY" ] ; then
+        decrypt_key=$(cut -d' ' -f4 <<< "$REPLY")
+      elif [ "$what" = "VALIDSIG" ] ; then
+        verify_key=$(cut -d' ' -f12 <<< "$REPLY")
+      fi
+    done
+
+    if [ -z "$verify_key" ] ; then
+      echo "ERROR: $SECRETS_PATH doesn't appear to be signed" >&2
+      exit 1
+    elif [ "$verify_key" != "$decrypt_key" ] ; then
+      echo "ERROR: different keys used to sign and to encrypt $SECRETS_PATH" >&2
+      exit 1
+    fi
+
+    cat - <&8
   fi
 }
 
 write_secrets()
 {
-  $SECRETS_GPG_PATH $SECRETS_GPG_ARGS --default-recipient-self --armor --encrypt -z 9 > $SECRETS_PATH
+  local fifo_dir
+  fifo_dir=$(mktemp -d)
+
+  mkfifo -m 0600 "$fifo_dir/output"
+  exec 9>/dev/null
+  exec 10<>"$fifo_dir/output"
+  exec 11<"$fifo_dir/output"
+
+  rm -rf "$fifo_dir"
+  $SECRETS_GPG_PATH $SECRETS_GPG_ARGS --default-recipient-self -z 9 --armor \
+    --logger-fd 9 --sign --encrypt >&10
+
+  exec 10>&-
+  cat - <&11 > "$SECRETS_PATH"
+  exec 11>&-
 }
 
 list_secrets()
