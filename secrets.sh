@@ -5,6 +5,7 @@
 #/
 #/   Store a secret:    secrets.sh set my_secret_key my_secret
 #/   Retrieve a secret: secrets.sh get my_secret_key
+#/   Forget a secret:   secrets.sh del my_secret_key
 #/   List all secrets:  secrets.sh list
 #/   Dump database:     secrets.sh dump
 #/
@@ -195,7 +196,7 @@ filter_secret()
 }
 
 case $1 in
-  help)
+  help|--help|usage|--usage|'')
     usage
     exit 0
     ;;
@@ -233,5 +234,4 @@ case $1 in
 esac
 
 #/
-#/ If you run into any problems or have a contribution you'd like to make,
-#/ open issues or pull requests at https://github.com/jordemort/secrets.sh
+#/ For more information, see https://github.com/jordemort/secrets.sh
