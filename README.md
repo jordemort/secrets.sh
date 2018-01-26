@@ -1,5 +1,6 @@
 # secrets.sh
 
+  - [About](#about)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Store a secret](#store-a-secret)
@@ -15,6 +16,8 @@
     - [SECRETS_LIST_FORMAT](#secrets_list_format)
     - [SECRETS_DATE_FORMAT](#secrets_date_format)
   - [License](#license)
+
+## About
 
 secrets.sh is a secrets manager written in [bash](https://www.gnu.org/software/bash/); it provides a simple key-value store that is
 stored in file signed and encrypted by [GnuPG](https://gnupg.org/).
