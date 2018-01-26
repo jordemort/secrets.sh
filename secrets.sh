@@ -31,6 +31,11 @@
 set -e
 set -o pipefail
 
+usage()
+{
+  grep "^#/" <"$0" | cut -c4-
+}
+
 #/ By default, the file $HOME/.secrets will be used to store secrets. If
 #/ you prefer, set the SECRETS_PATH in your environment to a different path.
 #/
@@ -57,10 +62,6 @@ if [ -n "$SECRETS_GPG_KEY" ] ; then
   SECRETS_GPG_ARGS="$SECRETS_GPG_ARGS --default-key $SECRETS_GPG_KEY"
 fi
 
-usage()
-{
-  grep "^#/" <"$0" | cut -c4-
-}
 
 require_args()
 {
