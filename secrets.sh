@@ -144,17 +144,27 @@ write_secrets()
   fifo_dir=$(mktemp -d)
 
   mkfifo -m 0600 "$fifo_dir/output"
-  exec 9>/dev/null
   exec 10<>"$fifo_dir/output"
   exec 11<"$fifo_dir/output"
 
+  mkfifo -m 0600 "$fifo_dir/logger"
+  exec 12<>"$fifo_dir/logger"
+  exec 13<"$fifo_dir/logger"
+
   rm -rf "$fifo_dir"
+  local gpg_status=0
   $SECRETS_GPG_PATH $SECRETS_GPG_ARGS --default-recipient-self -z 9 --armor \
-    --logger-fd 9 --sign --encrypt >&10
+    --logger-fd 12 --sign --encrypt >&10 || gpg_status=$?
 
   exec 10>&-
+  exec 12>&-
+
+  if [ "$gpg_status" != "0" ] ; then
+    cat - <&13 >&2
+    exit $gpg_status
+  fi
+
   cat - <&11 > "$SECRETS_PATH"
-  exec 11>&-
 }
 
 list_secrets()
