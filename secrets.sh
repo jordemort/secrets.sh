@@ -4,6 +4,7 @@
 #/ Simple secrets manager in bash using GPG
 #/
 #/   Store a secret:    secrets.sh set my_secret_key my_secret
+#/            ...or:    secrets.sh set my_secret_key 
 #/   Retrieve a secret: secrets.sh get my_secret_key
 #/   Forget a secret:   secrets.sh del my_secret_key
 #/   List all secrets:  secrets.sh list

@@ -1,5 +1,7 @@
 # secrets.sh
 
+⚠️ **WARNING:** This code is brand new. There are no tests yet. I haven't even started using it yet. ⚠️
+
   - [About](#about)
   - [Installation](#installation)
   - [Usage](#usage)
@@ -15,6 +17,7 @@
     - [SECRETS_GPG_ARGS](#secrets_gpg_args)
     - [SECRETS_LIST_FORMAT](#secrets_list_format)
     - [SECRETS_DATE_FORMAT](#secrets_date_format)
+  - [Credits](#credits)
   - [Inspirations and Alternatives](#inspirations-and-alternatives)
   - [License](#license)
 
@@ -35,6 +38,8 @@ to this purpose. If you want secrets.sh to always be fully non-interactive, it's
 Keys and values may contain any arbitrary data, including spaces, newlines, Unicode, and random binary garbage. If you can figure out how to pass it to secrets.sh
 as a command-line argument, then secrets.sh will do its best store it and retrieve it for you.
 
+Care has been taken to use as few external tools as possible, so you can throw this in your dotfiles (or submodule it via [homeshick](https://github.com/andsens/homeshick)) and take it with you wherever you go. The use of `eval` when serializing and deserializing keys has been spurned in order to make shell injection attacks more difficult.
+
 secrets.sh requires that the file the secrets are stored in is both signed and
 encrypted by the same GPG key. This is to prevent people you "trust" from signing
 a file with their own key and then encrypting it with your public key and
@@ -51,6 +56,10 @@ If anyone else actually ends up liking this I may package it in the future.
 ```secrets.sh set my_cool_key my_secret_value```
 
 Outputs nothing. Returns 0 if storing the secret was successful, or non-zero otherwise.
+
+```secrets.sh set my_cool_key```
+
+If you leave the value off, then secrets.sh will prompt you for it. This is nice if you want to avoid something getting written to your shell history.
 
 ### Retrieve a secret
 ```secrets.sh get my_cool_key```
@@ -77,7 +86,7 @@ The output of the `list` command can be customized -- (see below)[#secrets_list_
 
 This is mainly intended for debugging, or if you need to do something cool
 enough that you need access to the raw data. The decrypted form of the database
-is three shell-quoted strings separated by spaces and followed by a newline
+is three shell-quoted URL-encoded strings separated by spaces and followed by a newline
 (e.g, `printf "%q %q %q" $key $date $value`). The first string is the key,
 the second string is the time the key was set in seconds-since-the-epoch, and
 the third string is the value. You can process this output line-by-line by
@@ -108,6 +117,11 @@ The  [`printf`](http://wiki.bash-hackers.org/commands/builtin/printf) format use
 ### `SECRETS_DATE_FORMAT`
 
 The [`date`](http://man7.org/linux/man-pages/man1/date.1.html) format used for formatting the date displayed by the [`list`](#list-all-secrets) command. Defaults to `%F %I:%M%p %Z`.
+
+## Credits
+
+  - `urlencode` by [Brian K. White](https://github.com/aljex)
+  - `urldecode` by [Chris Down](https://github.com/cdown)
 
 ## Inspirations and Alternatives
 
