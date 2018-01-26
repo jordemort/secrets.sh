@@ -40,7 +40,7 @@ SECRETS_PATH=${SECRETS_PATH:-"$HOME/.secrets"}
 if [ -z "$SECRETS_GPG_PATH" ] ; then
   if [ -n "$(type -P gpg2)" ] ; then
     SECRETS_GPG_PATH="$(type -P gpg2)"
-  elif [ -n "$(type -P gpg2)" ] ; then
+  elif [ -n "$(type -P gpg)" ] ; then
     SECRETS_GPG_PATH="$(type -P gpg)"
   else
     echo "ERROR: couldn't find gpg on PATH, do you need to set SECRETS_GPG_PATH?" >&2
