@@ -65,7 +65,15 @@ if [ -n "$SECRETS_GPG_KEY" ] ; then
   SECRETS_GPG_ARGS="$SECRETS_GPG_ARGS --default-key $SECRETS_GPG_KEY"
 fi
 
-SECRETS_LIST_FORMAT=${SECRETS_LIST_FORMAT:-"%-50q %s"}
+if [ -z "$COLUMNS" ] ; then
+  if [ -t 1 ] ; then
+    COLUMNS=$(tput cols)
+  else
+    COLUMNS=72
+  fi
+fi
+
+SECRETS_LIST_FORMAT=${SECRETS_LIST_FORMAT:-"%-$((COLUMNS - 26))s | %s"}
 SECRETS_DATE_FORMAT=${SECRETS_DATE_FORMAT:-"%F %I:%M%p %Z"}
 
 require_args()
@@ -117,7 +125,6 @@ read_secrets()
 
     rm -rf "$fifo_dir"
     local gpg_status=0
-
     $SECRETS_GPG_PATH -q $SECRETS_GPG_ARGS --with-colons \
       --status-fd 3 --logger-fd 5 \
       --decrypt < "$SECRETS_PATH" >&7 || gpg_status=$?
