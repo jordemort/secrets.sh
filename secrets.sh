@@ -34,11 +34,11 @@
 
 set -e
 set -o pipefail
+unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     DATE_BIN=date;;
     Darwin*)    DATE_BIN=gdate;;
 esac
-DATE=$($DATE_BIN '+%m-%d')
 usage()
 {
   grep "^#/" <"$0" | cut -c4-
@@ -206,7 +206,7 @@ list_secrets()
   while read this_key this_date this_value
   do
     this_key=$(urldecode "$this_key")
-    printf "$SECRETS_LIST_FORMAT\n" "$this_key" "$(DATE_BIN +"$SECRETS_DATE_FORMAT" --date="@$this_date")"
+    printf "$SECRETS_LIST_FORMAT\n" "$this_key" "$($DATE_BIN +"$SECRETS_DATE_FORMAT" --date="@$this_date")"
   done
 }
 
@@ -266,7 +266,7 @@ case $1 in
     fi
     read_secrets | (
       filter_secret "$2"
-      printf "%q %q %q\n" "$(urlencode "$2")" "$(DATE_BIN '+%s')" "$(urlencode "$value")"
+      printf "%q %q %q\n" "$(urlencode "$2")" "$($DATE_BIN '+%s')" "$(urlencode "$value")"
     ) | write_secrets
     ;;
   get)
